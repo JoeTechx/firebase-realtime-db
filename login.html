@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="./css/form.css">
+</head>
+<body>
+    <div class="form-logo">
+        <img src="./img/frame 26.png" alt="" class="logo-img" />
+      </div>
+    <div class="form-container">
+    <img src="./img/training.png" alt=""  class="form-img" />
+<div class="form mb-5">
+    <h1 class="heading mb-3">Welcome Back</h1>
+    <p class="heading-subtitle">Continue From Where You Stop</p>
+
+    <input type="email" placeholder="Email" id="email_input" class="form-control mb-3">
+    <input type="text" placeholder="username" id="user_input" class="form-control mb-3">
+    <input type="password" placeholder="password" id="pass_input" class="form-control mb-3">
+    <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="customSwitch1">
+        <label class="custom-control-label" for="customSwitch1">Keep me logged in</label>
+      </div>
+    <button type="text" id="sub_btn" class="btn btn-outline-primary mb-3 w-100">Login</button>
+    <a href="/register.html" class="badge badge-secondary py-1 w-100">Don't have an Account? Register One </a>
+</div>
+</div>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- <div class="alert-box">
+        <p class="alert"></p>
+      </div>
+
+
+    <div class="form-logo">
+        <img src="./img/frame 26.png" alt="" class="logo-img" />
+      </div>
+      <div class="form-container">
+        <img src="./img/training.png" alt=""  class="form-img" />
+      <div class="form">
+        <h1 class="heading">Register</h1>
+        <p class="heading-subtitle">Track your studies At Your Own Pace</p>
+  
+        <input
+          type="text"
+          placeholder="Full Name"
+          autocomplete="off"
+          class="name"
+          required
+        />
+  
+        <input
+          type="email"
+          placeholder="email Address"
+          autocomplete="off"
+          class="email"
+          required
+        />
+  
+        <input
+          type="text"
+          placeholder="User Name"
+          autocomplete="off"
+          class="User-Name"
+          required
+        />
+  
+        <input
+          type="password"
+          placeholder="password"
+          autocomplete="off"
+          class="password"
+          required
+        />
+  
+        <button class="submit-btn">Register</button>
+        <a href="/login.html" class="link">already have an account? log in here</a>
+      </div>
+    </div> -->
+
+
+
+
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
+        import { getDatabase, ref, set, child, get } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCrO8HJavH8h_ADcNCHRM_ziINbCteNqmk",
+          authDomain: "studytraka-a1827.firebaseapp.com",
+          databaseURL: "https://studytraka-a1827-default-rtdb.firebaseio.com",
+          projectId: "studytraka-a1827",
+          storageBucket: "studytraka-a1827.appspot.com",
+          messagingSenderId: "931954097983",
+          appId: "1:931954097983:web:05514b9632de95d0b25d8a"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app)
+
+// References
+        const email = document.getElementById('email_input');
+        const username = document.getElementById('user_input');
+        const pass = document.getElementById('pass_input');
+        const submit = document.getElementById('sub_btn');
+
+
+// AUTHENTICATION 
+function AuthenticateUser(){
+    const dbref = ref(db);
+
+    get(child(dbref, "UsersList/"+username.value))
+                  .then((snapshot)=>{
+                    if(snapshot.exists()){
+                     
+                        let dbpass = decPass(snapshot.val().password);
+                        if(dbpass == pass.value){
+                            login(snapshot.val());
+                        }
+                        else{
+                            alert("user does not exist");
+                        }
+                    }
+                    else{
+                       
+                     alert("username or password is invalid")
+                    }
+                })
+        }
+             // decryption //
+                    function decPass(dbpass){
+                        var pass12 = CryptoJS.AES.decrypt(dbpass, pass.value);
+                        return pass12.toString(CryptoJS.enc.Utf8);
+                    }
+
+                    // LOGIN //
+                    function login(user){
+                        let keepLoggedIn = document.getElementById('customSwitch1').checked
+                        if(!keepLoggedIn){
+                            sessionStorage.setItem('user', JSON.stringify(user));
+                            window.location="index.html";
+                        }
+                        else{
+                            localStorage.setItem('keepLoggedIn', 'yes');
+                            localStorage.setItem('user', JSON.stringify(user));
+                            window.location="index.html";
+                        }
+                    }
+
+                     // assign event //
+
+            submit.addEventListener('click', AuthenticateUser);
+      </script>
+</body>
+</html>
